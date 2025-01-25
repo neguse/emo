@@ -44,7 +44,7 @@ function Memory({memory, pointer}: {memory: MemoryByte[], pointer: number}) {
             }
             const isPointer = index === pointer;
             cols.push(
-                <td key={col} className="cell">
+                <td key={col} className={isPointer ? "cell pointer" : "cell"}>
                     {memory[index].getEmo()}
                 </td>
             );
@@ -144,7 +144,7 @@ export default function Editor() {
     }
     useEffect(() => {
         onReset();
-    }, []);
+    }, [lang]);
     
     return (
         <div>
