@@ -19,3 +19,49 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.memory {
+  display: table;
+}
+
+.memory thead {
+  display: table-header-group;
+  font-weight: bold;
+}
+
+.memory tbody {
+  display: table-row-group;
+}
+
+.memory th, .memory td {
+  padding: 0.5em;
+  border: 1px solid var(--foreground);
+  text-align: center;
+  display: table-cell;
+  width: 3em;
+  height: 3em;
+}
+
+.program {
+  font-size: 2em;
+  width: 16em;
+  height: 8em;
+}
+
+button.key {
+  font-size: 4em;
+  background-color: white;
+  border-radius: 0.5em;
+}
+
+button.key:hover {
+  background-color: lightgray;
+}
+
+button.key:active {
+  background-color: gray;
+}
+
+.debug {
+  font-size: 3em;
+}
