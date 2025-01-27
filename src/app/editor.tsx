@@ -68,19 +68,18 @@ function Memory({memory, pointer}: {memory: MemoryByte[], pointer: number}) {
     );
 }
 
-function Program({text}: {text: string[]}) {
+function Program({text, onChange, canEdit}: {text: string, onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void, canEdit: boolean}) {
     return (
-        <textarea className="program" value={text.join('')} readOnly>
-            
+        <textarea className="program" value={text} onChange={onChange} readOnly={!canEdit}>
         </textarea>
     );
 }
 
-function Keyboard({onKey}: { onKey: (key: string) => void }) {
+function Keyboard({onKey, canPress}: { onKey: (key: string) => void, canPress: boolean }) {
     return (
             <div className='keyboard'>
                 {keys.map((key) => (
-                    <button className='key' key={key} onClick={() => onKey(key)}>
+                    <button className='key' key={key} onClick={() => onKey(key)} disabled={!canPress}>
                         {key}
                     </button>
                 ))}
@@ -92,10 +91,10 @@ function Debug({onReset, onStep}: {onReset: () => void, onStep: () => void}) {
     return (
         <div className='debug'>
             <button className='reset' onClick={onReset}>
-            ↩
+            ⏹️
             </button>
             <button className='step' onClick={onStep}>
-            ➡️
+            ▶️
             </button>
         </div>
     );
@@ -122,7 +121,8 @@ function initMemory() : MemoryByte[] {
 export default function Editor() {
     const [memory, setMemory] = useState<MemoryByte[]>([]);
     const [pointer, setPointer] = useState(0);
-    const [text, setText] = useState<string[]>([]);
+    const [text, setText] = useState<string>('');
+    const [playing, setPlaying] = useState(false);
     const lang = useRef(new Language());
 
     function onKey(key: string) {
@@ -130,14 +130,19 @@ export default function Editor() {
             setText(text.slice(0, -1));
             return;
         }
-        setText([...text, key]);
+        setText(text + key);
     }
-    function onReset() {
+    function initLang() {
         lang.current.init(text, initMemory());
         setMemory(lang.current.copyMemory());
         setPointer(lang.current.getPointer());
     }
+    function onReset() {
+        initLang();
+        setPlaying(false);
+    }
     function onStep() {
+        setPlaying(true);
         lang.current.step();
         setMemory(lang.current.copyMemory());
         setPointer(lang.current.getPointer());
@@ -145,12 +150,19 @@ export default function Editor() {
     useEffect(() => {
         onReset();
     }, [lang]);
+    useEffect(() => {
+        if (!playing) {
+            lang.current.init(text, initMemory());
+            setMemory(lang.current.copyMemory());
+            setPointer(lang.current.getPointer());
+        }
+    }, [playing, text, lang]);
     
     return (
         <div>
             <Memory memory={memory} pointer={pointer} />
-            <Program text={text} />
-            <Keyboard onKey={onKey} />
+            <Program text={text} onChange={(e) => setText(e.target.value)} canEdit={!playing} />
+            <Keyboard onKey={onKey} canPress={!playing} />
             <Debug onReset={onReset} onStep={onStep} />
         </div>
     );

@@ -81,10 +81,7 @@ export class Language {
         this.pointer = InitPointer;
     }
 
-    init(programText: string[], memory: MemoryByte[]) {
-        if (programText.length > ProgramSize) {
-            throw new Error('Program size exceeded');
-        }
+    init(programText: string, memory: MemoryByte[]) {
         if (memory.length > MemorySize) {
             throw new Error('Memory size exceeded');
         }
@@ -97,9 +94,14 @@ export class Language {
             this.memory.get(i).setEmo('');
             this.memory.get(i).setVal(0);
         }
-        programText.forEach((op, index) => {
-            this.memory.get(index + InitPointer).setEmo(op);
-        });
+        const segmenter = new Intl.Segmenter("ja", { granularity: "grapheme" });
+        const ops = [...segmenter.segment(programText)];
+        if (ops.length > ProgramSize) {
+            throw new Error('Program size exceeded');  
+        }
+        ops.forEach((op, index) => {
+            this.memory.get(index + InitPointer).setEmo(op.segment);
+        })
         this.pointer = InitPointer;
     }
 

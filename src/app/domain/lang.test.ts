@@ -47,19 +47,19 @@ describe('Language', () => {
 
     it('should throw error if program size exceeds limit', () => {
         const lang = new Language();
-        const programText = Array(ProgramSize + 1).fill('👈️');
+        const programText = '👈️'.repeat(ProgramSize + 1);
         expect(() => lang.init(programText, [])).toThrow('Program size exceeded');
     });
 
     it('should throw error if memory size exceeds limit', () => {
         const lang = new Language();
         const memory = Array(MemorySize + 1).fill(new MemoryByte());
-        expect(() => lang.init([], memory)).toThrow('Memory size exceeded');
+        expect(() => lang.init('', memory)).toThrow('Memory size exceeded');
     });
 
     it('should initialize memory and program correctly', () => {
         const lang = new Language();
-        const programText = ['👈️', '👇️'];
+        const programText = '👈️👇️';
         const memory = Array(MemorySize).fill(0).map(() => new MemoryByte());
         memory[0].setEmo('😊');
         memory[0].setVal(42);
@@ -72,7 +72,7 @@ describe('Language', () => {
 
     it('should execute step correctly', () => {
         const lang = new Language();
-        const programText = ['👈️', '👇️'];
+        const programText = '👈️👇️';
         lang.init(programText, []);
         lang.step();
         expect(lang.getPointer()).toBe(MemorySize - ProgramSize + 1);
@@ -84,7 +84,7 @@ describe('Language', () => {
         const lang = new Language();
         const memory = Array(MemorySize).fill(0).map(() => new MemoryByte());
         memory[0].setEmo('😭');
-        lang.init([], memory);
+        lang.init('', memory);
         lang.opMove(1);
         expect(lang.copyMemory()[1].getEmo()).toBe('😭');
         expect(lang.copyMemory()[0].getEmo()).toBe('');
